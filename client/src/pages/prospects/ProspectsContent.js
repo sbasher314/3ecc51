@@ -14,6 +14,7 @@ const Content = ({
   rowsPerPage,
   handleChangePage,
   handleChangeRowsPerPage,
+  handleActionButton
 }) => {
   const rowData = paginatedData.map((row) => [
     row.email,
@@ -45,6 +46,9 @@ const Content = ({
             "Updated",
           ]}
           rowData={rowData}
+          selectable={true}
+          actionButtonText={"Add to campaign"}
+          handleActionButton={handleActionButton}
         />
       )}
     </>

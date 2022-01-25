@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import MaterialTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
@@ -12,7 +12,7 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 
-import { Grid, TableCell, Typography } from "@material-ui/core";
+import { Checkbox, Button, Grid, TableCell, Typography } from "@material-ui/core";
 import { NUM_ROWS_PER_PAGE_CHOICES } from "../constants/table";
 import { useTableStyles } from "../styles/table";
 
@@ -83,12 +83,51 @@ export default function CustomPaginatedTable({
   rowData,
   handleChangePage,
   handleChangeRowsPerPage,
+  selectable,
+  actionButtonText,
+  handleActionButton
 }) {
-  const { tableContainer, tableHead, flexRootEnd } = useTableStyles();
+  const [selected, selectNew] = useState([]);
+  const { tableContainer, tableHead, flexRootEnd, tableAction, checkboxColumn} = useTableStyles();
+  const checkboxColumnWidth = "50px";
+
+  const isSelectionTable  = () => {
+    if (selectable === true) {
+      return (
+        <div className={tableAction}>
+          <p>{3} of {count} selected</p>
+          <Button
+            variant="outlined"
+            color="primary"
+            onClick={(e) => handleActionButton(e, selected)}
+          >
+            {actionButtonText}
+          </Button>
+        </div>
+      );
+    }
+  };
+
+  const isSelectionHeader = () => {
+    if (selectable === true) {
+      return <TableCell key={1} className={checkboxColumn}>
+        <Checkbox />
+      </TableCell>
+    }
+  }
+
+  const isSelectionRow = (index) => {
+    if (selectable === true) {
+      return <TableCell key={index}>
+        <Checkbox color="primary" />
+      </TableCell>
+    }
+  };
 
   const renderRows = () => {
     return rowData.map((row, index) => (
       <TableRow key={index} hover>
+        {isSelectionRow(index)}
         {row.map((col, index) => (
           <TableCell key={index}>{col}</TableCell>
         ))}
@@ -109,6 +148,7 @@ export default function CustomPaginatedTable({
   return (
     <React.Fragment>
       <div className={flexRootEnd}>
+        {isSelectionTable()}
         <TablePagination
           rowsPerPageOptions={NUM_ROWS_PER_PAGE_CHOICES}
           colSpan={3}
@@ -128,6 +168,7 @@ export default function CustomPaginatedTable({
         <MaterialTable aria-label="custom pagination table">
           <TableHead className={tableHead}>
             <TableRow>
+              {isSelectionHeader()}
               {headerColumns.map((col, index) => (
                 <React.Fragment key={index}>
                   <TableCell variant="head">{col}</TableCell>

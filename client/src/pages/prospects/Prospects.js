@@ -12,6 +12,13 @@ const Prospects = () => {
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_NUM_ROWS_PER_PAGE);
   const [count, setCount] = useState(0);
 
+  const handleActionButton = (event, selected) => {
+    /*
+    Open a dialog box to select which campaign to add the selected prospects to
+    after user selects which campaign, make server request.
+    */
+  }
+
   const handleChangeRowsPerPage = (event, _) => {
     setRowsPerPage(event.target.value);
     setCurrentPage(0);
@@ -53,6 +60,7 @@ const Prospects = () => {
             rowsPerPage={rowsPerPage}
             handleChangePage={handleChangePage}
             handleChangeRowsPerPage={handleChangeRowsPerPage}
+            handleActionButton={handleActionButton}
           />
         }
       />
