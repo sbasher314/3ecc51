@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import MaterialTable from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableHead from "@material-ui/core/TableHead";
@@ -85,21 +85,24 @@ export default function CustomPaginatedTable({
   handleChangeRowsPerPage,
   selectable,
   actionButtonText,
-  handleActionButton
+  handleActionButton,
+  selectedState
 }) {
-  const [selected, selectNew] = useState([]);
+  const [selected, selectNew] = selectedState || [[], () => {return}]; //fallback if selectedState is undefined aka default case
   const { tableContainer, tableHead, flexRootEnd, tableAction, checkboxColumn} = useTableStyles();
-  const checkboxColumnWidth = "50px";
+
+  const countSelected = () => selected.filter(Boolean).length;
 
   const isSelectionTable  = () => {
     if (selectable === true) {
       return (
         <div className={tableAction}>
-          <p>{3} of {count} selected</p>
+          <p>{countSelected()} of {count} selected</p>
           <Button
             variant="outlined"
             color="primary"
             onClick={(e) => handleActionButton(e, selected)}
+            disabled = {countSelected() < 1}
           >
             {actionButtonText}
           </Button>
@@ -109,17 +112,36 @@ export default function CustomPaginatedTable({
   };
 
   const isSelectionHeader = () => {
+    const selectedCount = countSelected();
     if (selectable === true) {
       return <TableCell key={1} className={checkboxColumn}>
-        <Checkbox />
+        <Checkbox
+        checked = {selectedCount === count}
+        indeterminate = {selectedCount > 0 && selectedCount < count}
+        onClick = {() => {
+          if (selectedCount === count) {
+            selectNew(new Array(count).fill(false));
+          } else {
+            selectNew(new Array(count).fill(true));
+          }
+        }}
+        />
       </TableCell>
     }
   }
 
   const isSelectionRow = (index) => {
+    const id = paginatedData[index].id - 1;
     if (selectable === true) {
       return <TableCell key={index}>
-        <Checkbox color="primary" />
+        <Checkbox
+        checked = {selected[id] || false}
+        onClick = {() => {
+          const newSelected = [...selected];
+          newSelected[id] = !selected[id] ? true : false;
+          selectNew(newSelected);
+        }}
+        color="primary" />
       </TableCell>
     }
   };
