@@ -88,12 +88,12 @@ export default function CustomPaginatedTable({
   handleActionButton,
   selectedState
 }) {
-  const [selected, selectNew] = selectedState || [[], () => {return}]; //fallback if selectedState is undefined aka default case
-  const { tableContainer, tableHead, flexRootEnd, tableAction, checkboxColumn} = useTableStyles();
+  const [selected, selectNew] = selectedState || [[], () => { return }]; //fallback if selectedState is undefined aka default case
+  const { tableContainer, tableHead, flexRootEnd, tableAction, checkboxColumn } = useTableStyles();
 
   const countSelected = () => selected.filter(Boolean).length;
 
-  const isSelectionTable  = () => {
+  const isSelectionTable = () => {
     if (selectable === true) {
       return (
         <div className={tableAction}>
@@ -102,7 +102,7 @@ export default function CustomPaginatedTable({
             variant="outlined"
             color="primary"
             onClick={(e) => handleActionButton(e, selected)}
-            disabled = {countSelected() < 1}
+            disabled={countSelected() < 1}
           >
             {actionButtonText}
           </Button>
@@ -116,15 +116,15 @@ export default function CustomPaginatedTable({
     if (selectable === true) {
       return <TableCell key={1} className={checkboxColumn}>
         <Checkbox
-        checked = {selectedCount === count}
-        indeterminate = {selectedCount > 0 && selectedCount < count}
-        onClick = {() => {
-          if (selectedCount === count) {
-            selectNew(new Array(count).fill(false));
-          } else {
-            selectNew(new Array(count).fill(true));
-          }
-        }}
+          checked={selectedCount === count}
+          indeterminate={selectedCount > 0 && selectedCount < count}
+          onClick={() => {
+            if (selectedCount === count) {
+              selectNew(new Array(count).fill(false));
+            } else {
+              selectNew(new Array(count).fill(true));
+            }
+          }}
         />
       </TableCell>
     }
@@ -135,13 +135,13 @@ export default function CustomPaginatedTable({
     if (selectable === true) {
       return <TableCell key={index}>
         <Checkbox
-        checked = {selected[id] || false}
-        onClick = {() => {
-          const newSelected = [...selected];
-          newSelected[id] = !selected[id] ? true : false;
-          selectNew(newSelected);
-        }}
-        color="primary" />
+          checked={selected[id] || false}
+          onClick={() => {
+            const newSelected = [...selected];
+            newSelected[id] = !selected[id] ? true : false;
+            selectNew(newSelected);
+          }}
+          color="primary" />
       </TableCell>
     }
   };

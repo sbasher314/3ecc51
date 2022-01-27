@@ -50,7 +50,7 @@ const Content = ({
           selectable={true}
           actionButtonText={"Add to campaign"}
           handleActionButton={handleActionButton}
-          selectedState = {selectedState}
+          selectedState={selectedState}
         />
       )}
     </>

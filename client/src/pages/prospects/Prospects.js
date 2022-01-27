@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
 import withAuth from "common/withAuth";
 import Drawer from "common/Drawer";
-import Autocomplete from "@material-ui/lab/Autocomplete";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Alert from '@material-ui/lab/Alert';
-import Snackbar from '@material-ui/core/Snackbar';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
+import { Autocomplete, Alert } from "@material-ui/lab";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar, TextField } from "@material-ui/core";
 import ProspectsContent from "./ProspectsContent";
 import axios from "axios";
 import { DEFAULT_NUM_ROWS_PER_PAGE } from "../../constants/table";
@@ -19,7 +12,7 @@ const Prospects = () => {
   const [prospectsData, setProspectsData] = useState([]);
   const [campaignsData, setCampaignsData] = useState([]);
   const [addToCampaignSelection, setAddToCampaignSelection] = useState({});
-  const [addToCampaignVisible, setAddToCampaignVisible] = useState(false)
+  const [addToCampaignVisible, setAddToCampaignVisible] = useState(false);
   const [alertMessage, setAlert] = useState({ severity: 'success', message: '', open: false });
   const [selected, selectNew] = useState([]);
   const [isDataLoading, setIsDataLoading] = useState(true);
@@ -34,7 +27,7 @@ const Prospects = () => {
     if (countSelected() > 0) {
       setAddToCampaignVisible(true)
     } else {
-      console.error('No prospects selected')
+      setAlert({ severity: 'warning', message: 'No prospects selected', open: true });
     }
   }
 
@@ -46,7 +39,6 @@ const Prospects = () => {
       }
     } else {
       setAlert({ severity: 'error', message: error, open: true });
-      console.error(error);
     }
   }
 
@@ -62,15 +54,11 @@ const Prospects = () => {
         `/api/campaigns/${addToCampaignSelection.id}/prospects`, { prospect_ids }
       );
       if (resp.data.error) throw new Error(resp.data.error);
-      //We should probably do something to show how many were added, perhaps.
-      //setProspectsData(resp.data.prospects);
       const message = `${resp.data.prospect_ids.length} prospects added to campaign ${addToCampaignSelection.id}`;
       selectNew([]);
       handleDialogClose(message);
     } catch (error) {
       handleDialogClose(error, error);
-    } finally {
-
     }
   }
 
@@ -86,7 +74,6 @@ const Prospects = () => {
   useEffect(() => {
     const fetchProspects = async () => {
       setIsDataLoading(true);
-
       try {
         const resp = await axios.get(
           `/api/prospects?page=${currentPage}&page_size=${rowsPerPage}`,
@@ -95,8 +82,7 @@ const Prospects = () => {
         setProspectsData(resp.data.prospects);
         setCount(resp.data.total);
       } catch (error) {
-        setAlert({severity:'error', message: error.message, open: true})
-        console.error(error);
+        setAlert({ severity: 'error', message: error.message, open: true })
       } finally {
         setIsDataLoading(false);
       }
@@ -112,7 +98,7 @@ const Prospects = () => {
       );
       setCampaignsData(resp.data.campaigns);
     } catch (error) {
-      console.error(error);
+      setAlert({ severity: 'error', message: error.message, open: true })
     }
   };
 
@@ -124,8 +110,8 @@ const Prospects = () => {
             <Snackbar
               open={alertMessage.open}
               autoHideDuration={6000}
-              onClose={()=> {
-                let newAlert = {...alertMessage}
+              onClose={() => {
+                let newAlert = { ...alertMessage }
                 newAlert.open = false;
                 setAlert(newAlert);
               }}
