@@ -63,6 +63,9 @@ ActiveRecord::Schema.define(version: 2022_01_28_041813) do
     t.integer "last_name_index"
     t.boolean "force"
     t.boolean "has_headers"
+    t.bigint "processed", default: 0
+    t.bigint "row_count", default: 0
+    t.boolean "finished", default: false
     t.bigint "users_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
