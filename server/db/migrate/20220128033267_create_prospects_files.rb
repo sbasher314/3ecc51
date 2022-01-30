@@ -1,6 +1,6 @@
-class CreateProspectFiles < ActiveRecord::Migration[6.1]
+class CreateProspectsFiles < ActiveRecord::Migration[6.1]
   def change
-    create_table :prospect_files do |t|
+    create_table :prospects_files do |t|
       t.integer :email_index
       t.integer :first_name_index
       t.integer :last_name_index

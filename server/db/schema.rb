@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_01_29_041813) do
+ActiveRecord::Schema.define(version: 2022_01_29_041817) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -58,7 +58,17 @@ ActiveRecord::Schema.define(version: 2022_01_29_041813) do
     t.index ["prospect_id", "campaign_id"], name: "index_campaigns_prospects_on_prospect_id_and_campaign_id"
   end
 
-  create_table "prospect_files", force: :cascade do |t|
+  create_table "prospects", force: :cascade do |t|
+    t.string "email"
+    t.text "first_name"
+    t.text "last_name"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_prospects_on_user_id"
+  end
+
+  create_table "prospects_files", force: :cascade do |t|
     t.integer "email_index"
     t.integer "first_name_index"
     t.integer "last_name_index"
@@ -70,17 +80,7 @@ ActiveRecord::Schema.define(version: 2022_01_29_041813) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_prospect_files_on_user_id"
-  end
-
-  create_table "prospects", force: :cascade do |t|
-    t.string "email"
-    t.text "first_name"
-    t.text "last_name"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.bigint "user_id", null: false
-    t.index ["user_id"], name: "index_prospects_on_user_id"
+    t.index ["user_id"], name: "index_prospects_files_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -94,6 +94,6 @@ ActiveRecord::Schema.define(version: 2022_01_29_041813) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "campaigns", "users"
-  add_foreign_key "prospect_files", "users"
   add_foreign_key "prospects", "users"
+  add_foreign_key "prospects_files", "users"
 end
