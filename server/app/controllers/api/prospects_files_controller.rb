@@ -3,10 +3,10 @@ require 'csv'
 class Api::ProspectsFilesController < ApplicationController
 
   def import
-    file_is_present = !params[:file].nil?
-    email_index_is_present = !params[:email_index].nil?
+    file_is_present = params[:file].present?
+    email_index_is_present = params[:email_index].present?
 
-    if !file_is_present | !email_index_is_present
+    if not (file_is_present && email_index_is_present)
       render json: {
         error: 'Missing required parameters',
         required_parameters_present: {
