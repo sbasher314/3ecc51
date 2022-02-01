@@ -10,10 +10,14 @@ class ImportProspectsJob < ApplicationJob
         email: row[prospects_file[:email_index]],
         first_name: row[prospects_file[:first_name_index]],
         last_name: row[prospects_file[:last_name_index]],
-        user_id: prospects_file.user_id
+        user_id: prospects_file[:user_id]
       }
 
-      existing_prospects = Prospect.where({email: values[:email], user_id: values[:user_id]})
+      existing_prospects = Prospect.where({
+        email: values[:email],
+        user_id: values[:user_id]
+      })
+
       if existing_prospects.blank?
         Prospect.create(values)
       elsif prospects_file[:force]
@@ -24,7 +28,6 @@ class ImportProspectsJob < ApplicationJob
       finished = processed == row_count
 
       prospects_file.update(processed: processed, finished: finished)
-
       prospects_file.file.purge_later if finished
 
     end

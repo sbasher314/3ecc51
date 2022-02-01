@@ -1,5 +1,5 @@
 class ProspectsFile < ApplicationRecord
-  validates_presence_of :file, :user_id
+  validates_presence_of :file, :email_index, :user_id
   after_commit :count_rows, on: :create
   has_one_attached :file
 end

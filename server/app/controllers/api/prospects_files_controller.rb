@@ -15,22 +15,26 @@ class Api::ProspectsFilesController < ApplicationController
         }
       }, status: 400
     elsif params[:file].size() > 200000000
-      render json: {error: 'File too large'}, status: 400
+      render json: {
+        error: 'File too large'
+      }, status: 400
     else
       begin
         prospects_file = ProspectsFile.create({
           **prospects_file_params,
-          user_id: @user.id})
-          render json: prospects_file
+          user_id: @user.id
+        })
+        render json: prospects_file
       rescue => e
-        render json: {error: e}, status: 400
+        render json: {
+          error: e
+        }, status: 400
       end
     end
   end
 
   def progress
     id = params[:id]
-    / In theory, we may want to only allow for viewing matching @user.id entries, as it stands any authenticated user can look at any other user's upload progress and we may want to limit that /
     begin
       prospects_file = ProspectsFile.find(id)
       render json: {
@@ -38,7 +42,9 @@ class Api::ProspectsFilesController < ApplicationController
         done: prospects_file.processed
       }
     rescue
-      render json: {error: 'Prospects file with id `' << id.to_s << '` not found'}, status: 400
+      render json: {
+        error: 'Prospects file with id `' << id.to_s << '` not found'
+      }, status: 400
     end
   end
 
