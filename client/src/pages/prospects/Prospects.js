@@ -14,17 +14,17 @@ const Prospects = () => {
   const [addToCampaignSelection, setAddToCampaignSelection] = useState({});
   const [addToCampaignVisible, setAddToCampaignVisible] = useState(false);
   const [alertMessage, setAlert] = useState({ severity: 'success', message: '', open: false });
-  const [selected, selectNew] = useState([]);
+  const [selectedProspects, setSelectedProspects] = useState(new Set());
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_NUM_ROWS_PER_PAGE);
   const [count, setCount] = useState(0);
 
-  const countSelected = () => selected.filter(Boolean).length;
+  const countSelectedProspects = () => selectedProspects.size
 
   const handleActionButton = async () => {
     await getCampaigns();
-    if (countSelected() > 0) {
+    if (countSelectedProspects() > 0) {
       setAddToCampaignVisible(true)
     } else {
       setAlert({ severity: 'warning', message: 'No prospects selected', open: true });
@@ -44,7 +44,7 @@ const Prospects = () => {
 
   const handleDialogSubmit = async () => {
     const prospect_ids = [];
-    selected.forEach((value, index) => {
+    selectedProspects.forEach((value, index) => {
       if (value === true) {
         prospect_ids.push(index + 1);
       }
@@ -55,7 +55,7 @@ const Prospects = () => {
       );
       if (resp.data.error) throw new Error(resp.data.error);
       const message = `${resp.data.prospect_ids.length} prospects added to campaign ${addToCampaignSelection.id}`;
-      selectNew([]);
+      setSelectedProspects(new Set());
       handleDialogClose(message);
     } catch (error) {
       handleDialogClose(error, error);
@@ -127,7 +127,7 @@ const Prospects = () => {
             </Snackbar>
 
             <Dialog open={addToCampaignVisible}>
-              <DialogTitle>Select a Campaign to Add {selected.filter(Boolean).length} Prospects</DialogTitle>
+              <DialogTitle>Select a Campaign to Add {countSelectedProspects()} Prospects</DialogTitle>
               <DialogContent>
                 <Autocomplete
                   id="combo-box-demo"
@@ -146,7 +146,7 @@ const Prospects = () => {
                   onClick={handleDialogSubmit}
                 >
                   Add to Campaign
-            </Button>
+                </Button>
               </DialogActions>
             </Dialog>
             <ProspectsContent
@@ -158,7 +158,8 @@ const Prospects = () => {
               handleChangePage={handleChangePage}
               handleChangeRowsPerPage={handleChangeRowsPerPage}
               handleActionButton={handleActionButton}
-              selectedState={[selected, selectNew]}
+              selectedItemsState={selectedProspects}
+              setSelectedItems={setSelectedProspects}
             />
           </>
 

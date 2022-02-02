@@ -83,26 +83,26 @@ export default function CustomPaginatedTable({
   rowData,
   handleChangePage,
   handleChangeRowsPerPage,
-  selectable,
+  selectable = false,
   actionButtonText,
   handleActionButton,
-  selectedState
+  selectedItemsState,
+  setSelectedItems
 }) {
-  const [selected, selectNew] = selectedState || [[], () => { return }]; //fallback if selectedState is undefined aka default case
   const { tableContainer, tableHead, flexRootEnd, tableAction, checkboxColumn } = useTableStyles();
 
-  const countSelected = () => selected.filter(Boolean).length;
+  const countSelectedItems = () => selectedItemsState?.size || 0;
 
   const isSelectionTable = () => {
     if (selectable === true) {
       return (
         <div className={tableAction}>
-          <p>{countSelected()} of {count} selected</p>
+          <p>{countSelectedItems()} of {count} selected</p>
           <Button
             variant="outlined"
             color="primary"
-            onClick={(e) => handleActionButton(e, selected)}
-            disabled={countSelected() < 1}
+            onClick={(e) => handleActionButton(e, selectedItemsState)}
+            disabled={countSelectedItems() < 1}
           >
             {actionButtonText}
           </Button>
@@ -112,7 +112,7 @@ export default function CustomPaginatedTable({
   };
 
   const isSelectionHeader = () => {
-    const selectedCount = countSelected();
+    const selectedCount = countSelectedItems();
     if (selectable === true) {
       return <TableCell key={1} className={checkboxColumn}>
         <Checkbox
@@ -120,9 +120,13 @@ export default function CustomPaginatedTable({
           indeterminate={selectedCount > 0 && selectedCount < count}
           onClick={() => {
             if (selectedCount === count) {
-              selectNew(new Array(count).fill(false));
+              setSelectedItems(new Set());
             } else {
-              selectNew(new Array(count).fill(true));
+              let itemSet = new Set();
+              for(let itemIndex = 0; itemIndex < count; itemIndex++) {
+                itemSet.add(itemIndex);
+              }
+              setSelectedItems(itemSet);
             }
           }}
         />
@@ -135,11 +139,15 @@ export default function CustomPaginatedTable({
     if (selectable === true) {
       return <TableCell key={index}>
         <Checkbox
-          checked={selected[id] || false}
+          checked={selectedItemsState.has(id)}
           onClick={() => {
-            const newSelected = [...selected];
-            newSelected[id] = !selected[id] ? true : false;
-            selectNew(newSelected);
+            const newSelected = new Set(selectedItemsState);
+            if (newSelected.has(id)) {
+              newSelected.delete(id);
+            } else {
+              newSelected.add(id);
+            }
+            setSelectedItems(newSelected);
           }}
           color="primary" />
       </TableCell>
