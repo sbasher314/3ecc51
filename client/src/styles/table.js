@@ -33,7 +33,7 @@ export const useTableStyles = makeStyles((theme) => ({
     flexGrow: 1,
     display: 'flex',
     '& button': {
-      marginLeft: '20px'
+      margin: 'auto 1.5rem'
     }
   },
   paginationRoot: {

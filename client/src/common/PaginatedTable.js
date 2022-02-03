@@ -97,9 +97,10 @@ export default function CustomPaginatedTable({
     if (selectable === true) {
       return (
         <div className={tableAction}>
-          <p>{countSelectedItems()} of {count} selected</p>
+          <p><strong>{countSelectedItems()} of {count} selected</strong></p>
           <Button
             variant="outlined"
+            size="small"
             color="primary"
             onClick={(e) => handleActionButton(e, selectedItemsState)}
             disabled={countSelectedItems() < 1}
