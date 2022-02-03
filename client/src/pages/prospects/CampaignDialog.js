@@ -83,8 +83,7 @@ const CampaignDialog = ({
             getCampaigns(value)
           }}
           getOptionSelected={(option, value) => option.value === value.value}
-          onChange={(e, value) => {
-            //setCampaignsData([value]);
+          onChange={(e, value) => {S
             setAddToCampaignSelection(value);
           }}
           renderInput={(params) => <TextField {...params} label="Select a campaign" />}
