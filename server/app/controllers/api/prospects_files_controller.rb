@@ -16,8 +16,8 @@ class Api::ProspectsFilesController < ApplicationController
       }, status: 400
     elsif params[:file].size() > 200000000
       render json: {
-        error: 'File too large'
-      }, status: 400
+        error: 'File too large - maximum file size is 200 MB'
+      }, status: 413
     else
       begin
         prospects_file = ProspectsFile.create({
@@ -26,9 +26,10 @@ class Api::ProspectsFilesController < ApplicationController
         })
         render json: prospects_file
       rescue => e
+        status = /limit/i.match(e.message) ? 413 : 500
         render json: {
-          error: e
-        }, status: 400
+          error: e.message
+        }, status: status
       end
     end
   end
@@ -36,7 +37,7 @@ class Api::ProspectsFilesController < ApplicationController
   def progress
     id = params[:id]
     begin
-      prospects_file = ProspectsFile.where(id: id, user_id: @user.id).first
+      prospects_file = ProspectsFile.find_by(id: id, user_id: @user.id)
       render json: {
         total: prospects_file.row_count,
         done: prospects_file.processed
