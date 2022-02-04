@@ -46,15 +46,9 @@ const CampaignDialog = ({
   }
 
   const handleDialogSubmit = async () => {
-    const prospect_ids = [];
-
-    selectedProspects.forEach(value => {
-        prospect_ids.push(value + 1);
-    });
-
     axios.post(
       `/api/campaigns/${addToCampaignSelection.id}/prospects`,
-      { prospect_ids }
+      { prospect_ids: [...selectedProspects] }
     ).then(resp => {
       const message = `${resp.data.prospect_ids.length} prospects added to campaign ${addToCampaignSelection.id}`;
       setSelectedProspects(new Set());
@@ -83,7 +77,7 @@ const CampaignDialog = ({
             getCampaigns(value)
           }}
           getOptionSelected={(option, value) => option.value === value.value}
-          onChange={(e, value) => {S
+          onChange={(e, value) => {
             setAddToCampaignSelection(value);
           }}
           renderInput={(params) => <TextField {...params} label="Select a campaign" />}

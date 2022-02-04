@@ -6,7 +6,6 @@ import ProspectsAlert from "./ProspectsAlert"
 import ProspectsContent from "./ProspectsContent";
 import axios from "axios";
 import { DEFAULT_NUM_ROWS_PER_PAGE } from "../../constants/table";
-import { Block, GpsFixed } from "@material-ui/icons";
 
 const Prospects = () => {
   const [prospectsData, setProspectsData] = useState([]);
@@ -18,10 +17,8 @@ const Prospects = () => {
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_NUM_ROWS_PER_PAGE);
   const [count, setCount] = useState(0);
 
-  const countSelectedProspects = () => selectedProspects.size;
-
   const handleActionButton = async () => {
-    if (countSelectedProspects() > 0) {
+    if (selectedProspects.size > 0) {
       setAddToCampaignVisible(true)
     } else {
       setAlert({ severity: 'warning', message: 'No prospects selected', open: true });
@@ -65,16 +62,16 @@ const Prospects = () => {
         RightDrawerComponent={
           <>
             {alertMessage.open && <ProspectsAlert
-              alertMessage = {alertMessage}
-              setAlert = {setAlert}
+              alertMessage={alertMessage}
+              setAlert={setAlert}
             />}
 
             <CampaignDialog
-              addToCampaignVisible = {addToCampaignVisible}
-              setAddToCampaignVisible = {setAddToCampaignVisible}
-              setAlert = {setAlert}
-              selectedProspects = {selectedProspects}
-              setSelectedProspects = {setSelectedProspects}
+              addToCampaignVisible={addToCampaignVisible}
+              setAddToCampaignVisible={setAddToCampaignVisible}
+              setAlert={setAlert}
+              selectedProspects={selectedProspects}
+              setSelectedProspects={setSelectedProspects}
             />
 
             <ProspectsContent

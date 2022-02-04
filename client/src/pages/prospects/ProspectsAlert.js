@@ -11,9 +11,7 @@ const ProspectsAlert = ({
     open={alertMessage.open}
     autoHideDuration={6000}
     onClose={() => {
-      let newAlert = { ...alertMessage }
-      newAlert.open = false;
-      setAlert(newAlert);
+      setAlert(prevAlert => ({...prevAlert, open: false}));
     }}
     vertical="bottom"
     horizontal="center"

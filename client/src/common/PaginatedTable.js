@@ -12,7 +12,7 @@ import KeyboardArrowLeft from "@material-ui/icons/KeyboardArrowLeft";
 import KeyboardArrowRight from "@material-ui/icons/KeyboardArrowRight";
 import LastPageIcon from "@material-ui/icons/LastPage";
 
-import { Checkbox, Button, Grid, TableCell, Typography } from "@material-ui/core";
+import { Box, Checkbox, Button, Grid, TableCell, Typography } from "@material-ui/core";
 import { NUM_ROWS_PER_PAGE_CHOICES } from "../constants/table";
 import { useTableStyles } from "../styles/table";
 
@@ -93,72 +93,75 @@ export default function CustomPaginatedTable({
 
   const countSelectedItems = () => selectedItemsState?.size || 0;
 
-  const isSelectionTable = () => {
-    if (selectable === true) {
-      return (
-        <div className={tableAction}>
-          <p><strong>{countSelectedItems()} of {count} selected</strong></p>
-          <Button
-            variant="outlined"
-            size="small"
-            color="primary"
-            onClick={(e) => handleActionButton(e, selectedItemsState)}
-            disabled={countSelectedItems() < 1}
-          >
-            {actionButtonText}
-          </Button>
-        </div>
-      );
-    }
+  const selectionTable = () => {
+    return (
+      <div className={tableAction}>
+        <Typography component="div">
+          <Box component="p">
+            {countSelectedItems()} of {count} selected
+          </Box>
+        </Typography>
+        <Button
+          variant="outlined"
+          size="small"
+          color="primary"
+          onClick={(e) => handleActionButton(e, selectedItemsState)}
+          disabled={countSelectedItems() < 1}
+        >
+          {actionButtonText}
+        </Button>
+      </div>
+    )
   };
 
-  const isSelectionHeader = () => {
-    const selectedCount = countSelectedItems();
-    if (selectable === true) {
-      return <TableCell key={1} className={checkboxColumn}>
-        <Checkbox
-          checked={selectedCount === count}
-          indeterminate={selectedCount > 0 && selectedCount < count}
-          onClick={() => {
-            if (selectedCount === count) {
-              setSelectedItems(new Set());
-            } else {
-              let itemSet = new Set();
-              for(let itemIndex = 0; itemIndex < count; itemIndex++) {
-                itemSet.add(itemIndex);
-              }
-              setSelectedItems(itemSet);
-            }
-          }}
-        />
-      </TableCell>
-    }
+  const selectionHeader = () => {
+    const selectedCount = paginatedData.reduce((selectedCount, row) => {
+      return selectedCount + selectedItemsState.has(row.id);
+    }, 0);
+    return <TableCell key={1} className={checkboxColumn}>
+      <Checkbox
+        checked={selectedCount === paginatedData.length}
+        indeterminate={selectedCount > 0 && selectedCount < paginatedData.length}
+        onClick={() => {
+          let itemSet = new Set(selectedItemsState);
+          if (selectedCount === paginatedData.length) {
+            paginatedData.forEach(row => {
+              itemSet.delete(row.id);
+            })
+          } else {
+            paginatedData.forEach(row => {
+              itemSet.add(row.id);
+            });
+
+          }
+          setSelectedItems(itemSet);
+        }}
+      />
+    </TableCell>
   }
 
-  const isSelectionRow = (index) => {
-    const id = paginatedData[index].id - 1;
-    if (selectable === true) {
-      return <TableCell key={index}>
-        <Checkbox
-          checked={selectedItemsState.has(id)}
-          onClick={() => {
-            const newSelected = new Set(selectedItemsState);
-            if (newSelected.has(id)) {
-              newSelected.delete(id);
-            } else {
-              newSelected.add(id);
-            }
-            setSelectedItems(newSelected);
-          }}
-          color="primary" />
-      </TableCell>
-    }
+  const selectionRow = (index) => {
+    const id = paginatedData[index].id;
+    return <TableCell key={index}>
+      <Checkbox
+        checked={selectedItemsState.has(id)}
+        onClick={() => {
+          const newSelected = new Set(selectedItemsState);
+          if (newSelected.has(id)) {
+            newSelected.delete(id);
+          } else {
+            newSelected.add(id);
+          }
+          setSelectedItems(newSelected);
+        }}
+        color="primary" />
+    </TableCell>
   };
 
   const renderRows = () => {
     return rowData.map((row, index) => (
       <TableRow key={index} hover>
-        {isSelectionRow(index)}
+        {selectable && selectionRow(index)}
         {row.map((col, index) => (
           <TableCell key={index}>{col}</TableCell>
         ))}
@@ -179,7 +182,7 @@ export default function CustomPaginatedTable({
   return (
     <React.Fragment>
       <div className={flexRootEnd}>
-        {isSelectionTable()}
+        {selectable && selectionTable()}
         <TablePagination
           rowsPerPageOptions={NUM_ROWS_PER_PAGE_CHOICES}
           colSpan={3}
@@ -199,7 +202,7 @@ export default function CustomPaginatedTable({
         <MaterialTable aria-label="custom pagination table">
           <TableHead className={tableHead}>
             <TableRow>
-              {isSelectionHeader()}
+              {selectable && selectionHeader()}
               {headerColumns.map((col, index) => (
                 <React.Fragment key={index}>
                   <TableCell variant="head">{col}</TableCell>
