@@ -36,7 +36,7 @@ class Api::ProspectsFilesController < ApplicationController
   def progress
     id = params[:id]
     begin
-      prospects_file = ProspectsFile.find(id)
+      prospects_file = ProspectsFile.where({user_id: @user.id, id: id})
       render json: {
         total: prospects_file.row_count,
         done: prospects_file.processed
@@ -44,7 +44,7 @@ class Api::ProspectsFilesController < ApplicationController
     rescue
       render json: {
         error: 'Prospects file with id `' << id.to_s << '` not found'
-      }, status: 400
+      }, status: 404
     end
   end
 
