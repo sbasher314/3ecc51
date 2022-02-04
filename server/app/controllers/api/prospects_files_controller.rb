@@ -36,7 +36,7 @@ class Api::ProspectsFilesController < ApplicationController
   def progress
     id = params[:id]
     begin
-      prospects_file = ProspectsFile.where({user_id: @user.id, id: id})
+      prospects_file = ProspectsFile.where(id: id, user_id: @user.id).first
       render json: {
         total: prospects_file.row_count,
         done: prospects_file.processed

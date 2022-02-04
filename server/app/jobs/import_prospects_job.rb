@@ -10,7 +10,8 @@ class ImportProspectsJob < ApplicationJob
         email: row[prospects_file[:email_index]],
         first_name: row[prospects_file[:first_name_index]],
         last_name: row[prospects_file[:last_name_index]],
-        user_id: prospects_file[:user_id]
+        user_id: prospects_file[:user_id],
+        prospects_files_id: prospects_file[:id]
       }
 
       existing_prospects = Prospect.where({
