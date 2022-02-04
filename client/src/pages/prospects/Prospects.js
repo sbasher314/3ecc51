@@ -1,16 +1,29 @@
 import React, { useState, useEffect } from "react";
 import withAuth from "common/withAuth";
 import Drawer from "common/Drawer";
+import CampaignDialog from "./CampaignDialog"
+import ProspectsAlert from "./ProspectsAlert"
 import ProspectsContent from "./ProspectsContent";
 import axios from "axios";
 import { DEFAULT_NUM_ROWS_PER_PAGE } from "../../constants/table";
 
 const Prospects = () => {
   const [prospectsData, setProspectsData] = useState([]);
+  const [addToCampaignVisible, setAddToCampaignVisible] = useState(false);
+  const [alertMessage, setAlert] = useState({ severity: 'success', message: '', open: false });
+  const [selectedProspects, setSelectedProspects] = useState(new Set());
   const [isDataLoading, setIsDataLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_NUM_ROWS_PER_PAGE);
   const [count, setCount] = useState(0);
+
+  const handleActionButton = async () => {
+    if (selectedProspects.size > 0) {
+      setAddToCampaignVisible(true)
+    } else {
+      setAlert({ severity: 'warning', message: 'No prospects selected', open: true });
+    }
+  }
 
   const handleChangeRowsPerPage = (event, _) => {
     setRowsPerPage(event.target.value);
@@ -24,7 +37,6 @@ const Prospects = () => {
   useEffect(() => {
     const fetchProspects = async () => {
       setIsDataLoading(true);
-
       try {
         const resp = await axios.get(
           `/api/prospects?page=${currentPage}&page_size=${rowsPerPage}`,
@@ -33,27 +45,48 @@ const Prospects = () => {
         setProspectsData(resp.data.prospects);
         setCount(resp.data.total);
       } catch (error) {
-        console.error(error);
+        setAlert({ severity: 'error', message: error.message, open: true })
       } finally {
         setIsDataLoading(false);
       }
     };
+
     fetchProspects();
   }, [rowsPerPage, currentPage]);
+
+
 
   return (
     <>
       <Drawer
         RightDrawerComponent={
-          <ProspectsContent
-            isDataLoading={isDataLoading}
-            paginatedData={prospectsData}
-            count={count}
-            page={currentPage}
-            rowsPerPage={rowsPerPage}
-            handleChangePage={handleChangePage}
-            handleChangeRowsPerPage={handleChangeRowsPerPage}
-          />
+          <>
+            {alertMessage.open && <ProspectsAlert
+              alertMessage={alertMessage}
+              setAlert={setAlert}
+            />}
+
+            <CampaignDialog
+              addToCampaignVisible={addToCampaignVisible}
+              setAddToCampaignVisible={setAddToCampaignVisible}
+              setAlert={setAlert}
+              selectedProspects={selectedProspects}
+              setSelectedProspects={setSelectedProspects}
+            />
+
+            <ProspectsContent
+              isDataLoading={isDataLoading}
+              paginatedData={prospectsData}
+              count={count}
+              page={currentPage}
+              rowsPerPage={rowsPerPage}
+              handleChangePage={handleChangePage}
+              handleChangeRowsPerPage={handleChangeRowsPerPage}
+              handleActionButton={handleActionButton}
+              selectedItemsState={selectedProspects}
+              setSelectedItems={setSelectedProspects}
+            />
+          </>
         }
       />
     </>

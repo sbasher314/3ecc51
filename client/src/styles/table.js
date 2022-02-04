@@ -22,6 +22,19 @@ export const useTableStyles = makeStyles((theme) => ({
     "& th:last-child, ": {
       borderRadius: "0  5px 5px 0",
     },
+    "& .MuiCheckbox-root": {
+      color: "#ffffff",
+    }
+  },
+  checkboxColumn: {
+    width: '50px'
+  },
+  tableAction: {
+    flexGrow: 1,
+    display: 'flex',
+    '& button': {
+      margin: 'auto 1.5rem'
+    }
   },
   paginationRoot: {
     flexShrink: 0,
